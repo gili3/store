@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<%- include('partials/head', { title: 'سلة التسوق' }) %>
+<body>
+    <%- include('partials/header') %>
+    
+    <main class="main-content">
+        <section id="cart" class="section active">
+            <h2 class="section-title">سلة التسوق</h2>
+            <div class="cart-container">
+                <div id="cartItemsList" class="cart-items">
+                    <!-- سيتم تعبئتها بواسطة JS -->
+                </div>
+                <div class="cart-summary">
+                    <div class="summary-item">
+                        <span>الإجمالي:</span>
+                        <span id="cartTotal">0 SDG</span>
+                    </div>
+                    <button onclick="window.location.href='/checkout'" class="btn-primary" id="checkoutBtn" disabled>إتمام الطلب</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <%- include('partials/footer') %>
+</body>
+</html>

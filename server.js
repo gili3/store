@@ -207,32 +207,29 @@ app.get("/admin", async (req, res) => {
 app.get("/cart", async (req, res) => {
     const settings = await getSettings();
     const categories = await getCategories();
-    // جلب بيانات السلة من الكوكيز أو الجلسة (مثال)
-    const cartItems = req.cookies.cart ? JSON.parse(req.cookies.cart) : [];
-    res.render("index", { settings, categories, cartItems, page: "cart" });
+    res.render("cart", { settings, categories, page: "cart" });
 });
 
 app.get("/checkout", async (req, res) => {
     const settings = await getSettings();
     const categories = await getCategories();
-    res.render("index", { settings, categories, page: "checkout" });
+    res.render("checkout", { settings, categories, page: "checkout" });
 });
 
 app.get("/profile", async (req, res) => {
     if (!req.user) return res.redirect("/login");
     const settings = await getSettings();
     const categories = await getCategories();
-    res.render("index", { settings, categories, user: req.user, page: "profile" });
+    res.render("profile", { settings, categories, user: req.user, page: "profile" });
 });
 
 app.get("/my-orders", async (req, res) => {
     if (!req.user) return res.redirect("/login");
     const settings = await getSettings();
     const categories = await getCategories();
-    // جلب الطلبات من السيرفر
     const orders = await db.collection("orders").where("userId", "==", req.user.uid).get();
     const ordersData = orders.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    res.render("index", { settings, categories, orders: ordersData, page: "my-orders" });
+    res.render("my-orders", { settings, categories, orders: ordersData, page: "my-orders" });
 });
 
 app.get(["/about", "/contact", "/tracking"], async (req, res) => {
