@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="<%= settings.storeDescription || 'متجر إليفن - متجرك الموثوق للتسوق الإلكتروني' %>">
+    <meta name="theme-color" content="<%= settings.theme?.primaryColor || '#c9a24d' %>">
+    <title><%= settings.storeName || 'Eleven Store' %></title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/public/images/logo.png">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/public/css/style.css?v=2.0">
+    
+    <style>
+        :root {
+            --primary-color: <%= settings.theme?.primaryColor || '#c9a24d' %>;
+            --secondary-color: <%= settings.theme?.secondaryColor || '#a88b3d' %>;
+            --success-color: <%= settings.theme?.successColor || '#27ae60' %>;
+            --danger-color: <%= settings.theme?.dangerColor || '#e74c3c' %>;
+        }
+        
+        /* تحسينات الأداء */
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #f9f9f9;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            border-radius: 12px;
+            margin-bottom: 40px;
+        }
+        
+        .hero-section h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+        
+        .hero-section p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .btn-primary {
+            background: white;
+            color: var(--primary-color);
+            padding: 15px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .categories-section {
+            padding: 40px 20px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 40px;
+        }
+        
+        .categories-section h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+        
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .category-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .category-card i {
+            font-size: 2em;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .category-card p {
+            font-weight: 600;
+        }
+        
+        .products-section {
+            padding: 40px 20px;
+        }
+        
+        .products-section h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .product-image {
+            position: relative;
+            overflow: hidden;
+            height: 200px;
+            background: #f5f5f5;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+        
+        .product-discount {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--danger-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        
+        .product-info {
+            padding: 15px;
+        }
+        
+        .product-name {
+            margin: 0 0 10px 0;
+            font-size: 0.95em;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .product-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .price-current {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.1em;
+        }
+        
+        .price-original {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 0.9em;
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-add-cart {
+            flex: 1;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+        
+        .btn-add-cart:hover {
+            background: var(--secondary-color);
+        }
+        
+        .btn-view {
+            flex: 1;
+            background: #f5f5f5;
+            color: #333;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .btn-view:hover {
+            background: #e0e0e0;
+        }
+        
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .empty-state i {
+            font-size: 3em;
+            color: #ccc;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .empty-state p {
+            color: #999;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/header', { settings, categories }) %>
+    
+    <main class="main-content">
+        <!-- قسم البطل (Hero Section) -->
+        <section class="hero-section">
+            <h1>مرحباً بك في <%= settings.storeName || 'Eleven Store' %></h1>
+            <p><%= settings.storeTagline || 'اكتشف أفضل المنتجات بأسعار مميزة' %></p>
+            <a href="/products" class="btn-primary">تصفح المنتجات الآن</a>
+        </section>
+        
+        <!-- قسم الفئات -->
+        <% if (categories && categories.length > 0) { %>
+        <section class="categories-section">
+            <h2>الفئات المتاحة</h2>
+            <div class="categories-grid">
+                <% categories.forEach(category => { %>
+                <a href="/products?category=<%= category.id %>" class="category-card">
+                    <i class="<%= category.icon || 'fas fa-tag' %>" style="color: <%= category.color || settings.theme?.primaryColor || '#c9a24d' %>;"></i>
+                    <p><%= category.name %></p>
+                </a>
+                <% }); %>
+            </div>
+        </section>
+        <% } %>
+        
+        <!-- قسم المنتجات المميزة -->
+        <section class="products-section">
+            <h2>أحدث المنتجات</h2>
+            <div class="products-grid">
+                <% if (featuredProducts && featuredProducts.length > 0) { %>
+                    <% featuredProducts.forEach(product => { %>
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="<%= product.image || '/public/images/placeholder.png' %>" alt="<%= product.name %>" loading="lazy">
+                            <% if (product.discount) { %>
+                            <span class="product-discount">-<%= product.discount %>%</span>
+                            <% } %>
+                        </div>
+                        <div class="product-info">
+                            <h4 class="product-name"><%= product.name %></h4>
+                            <div class="product-price">
+                                <span class="price-current"><%= product.price %> <%= settings.storeCurrency || 'SDG' %></span>
+                                <% if (product.originalPrice) { %>
+                                <span class="price-original"><%= product.originalPrice %></span>
+                                <% } %>
+                            </div>
+                            <div class="product-actions">
+                                <button class="btn-add-cart" onclick="addToCart('<%= product.id %>')">
+                                    <i class="fas fa-shopping-cart"></i> أضف
+                                </button>
+                                <a href="/product/<%= product.id %>" class="btn-view">
+                                    <i class="fas fa-eye"></i> عرض
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <% }); %>
+                <% } else { %>
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>لا توجد منتجات متاحة حالياً</p>
+                </div>
+                <% } %>
+            </div>
+        </section>
+    </main>
+    
+    <%- include('partials/footer', { settings }) %>
+    
+    <!-- JavaScript خفيف جداً - فقط للتفاعل الأساسي -->
+    <script>
+        // إدارة السلة بسيطة جداً
+        function addToCart(productId) {
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const item = cart.find(i => i.id === productId);
+            
+            if (item) {
+                item.quantity++;
+            } else {
+                cart.push({ id: productId, quantity: 1 });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            alert('تمت إضافة المنتج إلى السلة');
+            updateCartCount();
+        }
+        
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            const cartCountEl = document.querySelector('.cart-count');
+            if (cartCountEl) {
+                cartCountEl.textContent = count;
+                cartCountEl.style.display = count > 0 ? 'flex' : 'none';
+            }
+        }
+        
+        // تحديث عداد السلة عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', updateCartCount);
+    </script>
+</body>
+</html>

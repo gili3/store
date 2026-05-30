@@ -1,0 +1,31 @@
+{
+  "name": "store-api",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "chart.js": "^4.5.1",
+    "compression": "^1.8.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.6",
+    "csurf": "^1.2.2",
+    "dotenv": "^17.4.2",
+    "ejs": "^3.1.10",
+    "express": "^5.2.1",
+    "express-rate-limit": "^7.1.5",
+    "express-session": "^1.17.3",
+    "express-validator": "^7.0.0",
+    "firebase-admin": "^13.10.0",
+    "helmet": "^8.2.0",
+    "node-cron": "^4.2.1",
+    "sharp": "^0.34.5",
+    "winston": "^3.11.0"
+  }
+}

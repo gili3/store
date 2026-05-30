@@ -1,0 +1,82 @@
+<footer class="main-footer" style="background: #2c3e50; color: white; padding: 40px 20px; margin-top: 60px;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-bottom: 30px;">
+            
+            <!-- عن المتجر -->
+            <div>
+                <h3 style="margin-bottom: 15px; font-size: 1.1em; font-weight: 700;">عن <%= settings.storeName || 'Eleven Store' %></h3>
+                <p style="opacity: 0.8; line-height: 1.6;">
+                    <%= settings.storeDescription || 'متجرك الموثوق للتسوق الإلكتروني مع أفضل المنتجات وأسعار مميزة' %>
+                </p>
+            </div>
+
+            <!-- الروابط السريعة -->
+            <div>
+                <h3 style="margin-bottom: 15px; font-size: 1.1em; font-weight: 700;">روابط سريعة</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 8px;"><a href="/" style="color: #ecf0f1; text-decoration: none; transition: color 0.3s;">الرئيسية</a></li>
+                    <li style="margin-bottom: 8px;"><a href="/products" style="color: #ecf0f1; text-decoration: none; transition: color 0.3s;">المنتجات</a></li>
+                    <li style="margin-bottom: 8px;"><a href="/about" style="color: #ecf0f1; text-decoration: none; transition: color 0.3s;">عن المتجر</a></li>
+                    <li style="margin-bottom: 8px;"><a href="/contact" style="color: #ecf0f1; text-decoration: none; transition: color 0.3s;">تواصل معنا</a></li>
+                </ul>
+            </div>
+
+            <!-- معلومات التواصل -->
+            <div>
+                <h3 style="margin-bottom: 15px; font-size: 1.1em; font-weight: 700;">تواصل معنا</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <% if (settings.phone) { %>
+                    <li style="margin-bottom: 8px;">
+                        <i class="fas fa-phone" style="margin-left: 10px;"></i>
+                        <a href="tel:<%= settings.phone %>" style="color: #ecf0f1; text-decoration: none;"><%= settings.phone %></a>
+                    </li>
+                    <% } %>
+                    <% if (settings.email) { %>
+                    <li style="margin-bottom: 8px;">
+                        <i class="fas fa-envelope" style="margin-left: 10px;"></i>
+                        <a href="mailto:<%= settings.email %>" style="color: #ecf0f1; text-decoration: none;"><%= settings.email %></a>
+                    </li>
+                    <% } %>
+                    <% if (settings.address) { %>
+                    <li style="margin-bottom: 8px;">
+                        <i class="fas fa-map-marker-alt" style="margin-left: 10px;"></i>
+                        <%= settings.address %>
+                    </li>
+                    <% } %>
+                </ul>
+            </div>
+
+            <!-- وسائل التواصل الاجتماعي -->
+            <div>
+                <h3 style="margin-bottom: 15px; font-size: 1.1em; font-weight: 700;">تابعنا</h3>
+                <div style="display: flex; gap: 15px;">
+                    <% if (settings.socialMedia?.facebook) { %>
+                    <a href="<%= settings.socialMedia.facebook %>" target="_blank" style="color: white; font-size: 1.5em; transition: color 0.3s;">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                    <% } %>
+                    <% if (settings.socialMedia?.instagram) { %>
+                    <a href="<%= settings.socialMedia.instagram %>" target="_blank" style="color: white; font-size: 1.5em; transition: color 0.3s;">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <% } %>
+                    <% if (settings.socialMedia?.twitter) { %>
+                    <a href="<%= settings.socialMedia.twitter %>" target="_blank" style="color: white; font-size: 1.5em; transition: color 0.3s;">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <% } %>
+                    <% if (settings.socialMedia?.whatsapp) { %>
+                    <a href="https://wa.me/<%= settings.socialMedia.whatsapp %>" target="_blank" style="color: white; font-size: 1.5em; transition: color 0.3s;">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- الخط الفاصل -->
+        <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; text-align: center; opacity: 0.8;">
+            <p>&copy; <%= new Date().getFullYear() %> <%= settings.storeName || 'Eleven Store' %>. جميع الحقوق محفوظة.</p>
+        </div>
+    </div>
+</footer>
