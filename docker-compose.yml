@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - FIREBASE_PROJECT_ID=queen-beauty-b811b
+      - FIREBASE_STORAGE_BUCKET=queen-beauty-b811b.appspot.com
+    volumes:
+      - .:/app
+      - /app/node_modules
+    restart: unless-stopped
+    networks:
+      - eleven-network
+
+networks:
+  eleven-network:
+    driver: bridge
