@@ -87,7 +87,7 @@ async function startServer() {
   const allowedOrigins = [
     'capacitor://localhost',
     'http://localhost',
-    'https://eleven-cf6o.onrender.com',
+    'https://eleven-x9ed.onrender.com',
     ...(process.env.EXTRA_CORS_ORIGIN ? [process.env.EXTRA_CORS_ORIGIN] : []),
   ];
   app.use(cors({

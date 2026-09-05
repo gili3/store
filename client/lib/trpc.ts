@@ -4,7 +4,7 @@ import { httpBatchLink } from '@trpc/client';
 import superjson from 'superjson';
 
 // رابط الموقع المستضاف على Render
-const API_URL = 'https://eleven-cf6o.onrender.com';
+const API_URL = 'https://eleven-x9ed.onrender.com';
 
 export const trpc = createTRPCReact<AppRouter>();
 
