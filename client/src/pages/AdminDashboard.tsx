@@ -283,7 +283,9 @@ export default function AdminDashboard() {
 
   // Data fetching
   const { data: storeSettings } = trpc.firestore.getStoreSettings.useQuery();
-  const { data: products = [], isLoading: isProductsLoading } = trpc.firestore.getProducts.useQuery();
+  const { data: products = [], isLoading: isProductsLoading } = trpc.firestore.getAllProductsAdmin.useQuery(undefined, {
+    enabled: !!user && user.role === "admin",
+  });
   const { data: categories = [], isLoading: isCategoriesLoading } = trpc.firestore.getCategories.useQuery();
   const { data: banners = [], isLoading: isBannersLoading } = trpc.firestore.getAllBannersAdmin.useQuery(undefined, {
     enabled: !!user && user.role === "admin",
@@ -337,16 +339,21 @@ export default function AdminDashboard() {
   const utils = trpc.useUtils();
 
   // Product Mutations
+  // ✅ إصلاح: كانت تُبطِل (invalidate) كاش getProducts العام (المتجر للزوار)
+  // بدل getAllProductsAdmin الذي تعرضه لوحة التحكم فعلياً — بعد هذا التعديل،
+  // إضافة/تعديل/حذف منتج في لوحة التحكم كان لا يُحدِّث جدول المنتجات بنفس
+  // الشاشة إطلاقاً إلا بعد إعادة تحميل الصفحة يدوياً (F5) لأن مفتاح الكاش
+  // المختلف لا يتأثر. نُبطِل الاثنين معاً حتى يبقى المتجر العام محدَّثاً أيضاً.
   const createProduct = trpc.firestore.createProduct.useMutation({
-    onSuccess: () => { toast.success("تم إضافة المنتج بنجاح"); setShowProductDialog(false); resetProductForm(); utils.firestore.getProducts.invalidate(); },
+    onSuccess: () => { toast.success("تم إضافة المنتج بنجاح"); setShowProductDialog(false); resetProductForm(); utils.firestore.getAllProductsAdmin.invalidate(); utils.firestore.getProducts.invalidate(); },
     onError: (err) => toast.error(err.message || "حدث خطأ"),
   });
   const updateProduct = trpc.firestore.updateProduct.useMutation({
-    onSuccess: () => { toast.success("تم تحديث المنتج بنجاح"); setShowProductDialog(false); resetProductForm(); setIsEditingProduct(false); utils.firestore.getProducts.invalidate(); },
+    onSuccess: () => { toast.success("تم تحديث المنتج بنجاح"); setShowProductDialog(false); resetProductForm(); setIsEditingProduct(false); utils.firestore.getAllProductsAdmin.invalidate(); utils.firestore.getProducts.invalidate(); },
     onError: (err) => toast.error(err.message || "حدث خطأ"),
   });
   const deleteProduct = trpc.firestore.deleteProduct.useMutation({
-    onSuccess: () => { toast.success("تم حذف المنتج بنجاح"); utils.firestore.getProducts.invalidate(); },
+    onSuccess: () => { toast.success("تم حذف المنتج بنجاح"); utils.firestore.getAllProductsAdmin.invalidate(); utils.firestore.getProducts.invalidate(); },
     onError: (err) => toast.error(err.message || "حدث خطأ"),
   });
 

@@ -169,6 +169,10 @@ export async function configureIndexSettings(): Promise<void> {
         "isOnSale",
         "isFeatured",
         "isBestSeller",
+        // ✅ إصلاح: مطلوب حتى يعمل فلتر "جديد" (createdAtTimestamp > ...) في
+        // بحث Algolia — بدونه يرفض Algolia أي فلتر يستخدم هذا الحقل (انظر
+        // client/src/lib/algolia.ts وAlgoliaSearchService.kt بالأندرويد).
+        "filterOnly(createdAtTimestamp)",
       ],
       customRanking: ["desc(createdAtTimestamp)"],
       queryLanguages: ["ar", "en"],

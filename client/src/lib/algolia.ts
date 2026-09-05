@@ -48,8 +48,16 @@ export type SearchProductsParams = {
   brandId?: string;
   onSale?: boolean;
   isFeatured?: boolean;
+  // ✅ جديدان: كانا مفقودين بالكامل، ما يجعل البحث النصي يتجاهل فلتري
+  // "جديد" و"الأكثر مبيعاً" (انظر التعليق في Products.tsx والفلاتر أدناه).
+  isBestSeller?: boolean;
+  isNew?: boolean;
   hitsPerPage?: number;
 };
+
+// نفس نافذة "جديد" (30 يوماً) المستخدمة في getProducts/getNewProducts بالسيرفر
+// وFirestoreRepository.getProducts بالأندرويد — يجب أن تبقى القيمة الثلاثة متطابقة.
+const NEW_PRODUCT_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 
 /**
  * يبحث عن منتجات عبر Algolia مباشرة من الواجهة (مفتاح Search-Only). يُستخدم
@@ -67,6 +75,12 @@ export async function searchProducts(params: SearchProductsParams): Promise<Algo
   if (params.brandId) filters.push(`brandId:${params.brandId}`);
   if (params.onSale) filters.push("isOnSale:true");
   if (params.isFeatured) filters.push("isFeatured:true");
+  if (params.isBestSeller) filters.push("isBestSeller:true");
+  // لا يوجد حقل Boolean حقيقي "isNew" بالفهرس (مطابقةً لعدم وجوده في
+  // Firestore) — نفس تعريف "جديد" الحقيقي: createdAtTimestamp خلال آخر
+  // 30 يوماً. يتطلب إدراج createdAtTimestamp ضمن attributesForFaceting
+  // بإعدادات الفهرس (انظر configureIndexSettings في server/algolia-service.ts).
+  if (params.isNew) filters.push(`createdAtTimestamp > ${Date.now() - NEW_PRODUCT_WINDOW_MS}`);
 
   // ⚠️ توقيع client.search() هنا مطابق لتوثيق algoliasearch v5 وقت كتابة هذا
   // الكود ({ requests: [...] } → { results: [...] }). لم يتسنَّ تشغيل

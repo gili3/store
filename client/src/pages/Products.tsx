@@ -51,26 +51,23 @@ export default function Products() {
   // جلب البيانات
   const { data: categories = [] } = trpc.firestore.getCategories.useQuery();
   const { data: brands = [] } = trpc.firestore.getBrands.useQuery();
-  
-  // جلب المنتجات حسب الفلتر
+
+  // ✅ إصلاح: تُستخدم الآن استعلام getProducts الموحَّد الوحيد لكل أنواع
+  // الفلترة (تماماً كما في Home.tsx وتطبيق الأندرويد ProductsScreen/loadProducts)
+  // بدل توزيعها على 3 استعلامات منفصلة (getProducts/getNewProducts/getBestSellers).
+  // كانت getNewProducts وgetBestSellers القديمتان لا تقبلان categoryId إطلاقاً،
+  // فكان اختيار فئة مع فلتر "جديد" أو "الأكثر مبيعاً" يُهمَل تماماً على الموقع
+  // بينما يعمل بشكل صحيح على تطبيق الأندرويد — نتائج مختلفة بين المنصتين لنفس
+  // الفلاتر المُختارة بالضبط. الآن كل شروط الفلترة (فئة + نوع الفلتر) تُركَّب
+  // معاً بنفس الاستعلام الواحد، فتتطابق النتائج مع الأندرويد دائماً.
   const { data: allProducts = [], isLoading: isProductsLoading } = trpc.firestore.getProducts.useQuery({
     categoryId: selectedCategory !== "all" ? selectedCategory : undefined,
     brandId: filterType === 'brands' && selectedBrand !== "all" ? selectedBrand : undefined,
     isFeatured: filterType === 'featured' ? true : undefined,
     onSale: filterType === 'onSale' ? true : undefined,
+    isNew: filterType === 'new' ? true : undefined,
+    isBestSeller: filterType === 'bestSeller' ? true : undefined,
   });
-
-  // جلب المنتجات الجديدة
-  const { data: newProducts = [], isLoading: isNewLoading } = trpc.firestore.getNewProducts.useQuery(
-    { limit: 50 },
-    { enabled: filterType === 'new' }
-  );
-
-  // جلب الأكثر مبيعاً
-  const { data: bestSellers = [], isLoading: isBestLoading } = trpc.firestore.getBestSellers.useQuery(
-    { limit: 50 },
-    { enabled: filterType === 'bestSeller' }
-  );
 
   // ─────────────────────────────────────────────────────────────────────
   // 🔎 البحث عبر Algolia (بدل الفلترة المحلية القديمة بـ includes())
@@ -90,6 +87,12 @@ export default function Products() {
       filterType === 'brands' ? selectedBrand : null,
       filterType === 'featured',
       filterType === 'onSale',
+      // ✅ إصلاح: filterType كان يؤثر فقط على brands/featured/onSale ضمن
+      // مفتاح الاستعلام (queryKey) — البحث مع فلتر "جديد" أو "الأكثر مبيعاً"
+      // كان يستخدم نتيجة مخزَّنة (cache) لا تفرّق بينها، فيظهر نفس نتائج
+      // البحث بغضّ النظر عن هذين الفلترين. أُضيفا الآن أيضاً.
+      filterType === 'new',
+      filterType === 'bestSeller',
     ],
     queryFn: () =>
       searchProducts({
@@ -98,6 +101,13 @@ export default function Products() {
         brandId: filterType === 'brands' && selectedBrand !== "all" ? selectedBrand : undefined,
         isFeatured: filterType === 'featured' ? true : undefined,
         onSale: filterType === 'onSale' ? true : undefined,
+        // ✅ إصلاح: كان بحث Algolia يتجاهل تماماً فلتري "جديد" و"الأكثر مبيعاً"
+        // — كتابة نص بحث أثناء اختيار أحدهما كانت تُرجع كل المنتجات المطابقة
+        // للنص من كل التصنيفات بدل الاقتصار على الجديد/الأكثر مبيعاً فقط،
+        // نتيجة مختلفة عن التصفح بلا بحث لنفس الفلتر. انظر أيضاً algolia.ts
+        // وconfigureIndexSettings بالسيرفر لدعم createdAtTimestamp كفلتر.
+        isNew: filterType === 'new' ? true : undefined,
+        isBestSeller: filterType === 'bestSeller' ? true : undefined,
         hitsPerPage: 60,
       }),
     enabled: useAlgoliaSearch,
@@ -112,20 +122,8 @@ export default function Products() {
     products = searchHits.map(hitToProduct);
     isLoading = isSearchLoading;
   } else {
-    switch (filterType) {
-      case 'new':
-        products = newProducts;
-        isLoading = isNewLoading;
-        break;
-      case 'bestSeller':
-        products = bestSellers;
-        isLoading = isBestLoading;
-        break;
-      default:
-        products = allProducts;
-        isLoading = isProductsLoading;
-        break;
-    }
+    products = allProducts;
+    isLoading = isProductsLoading;
 
     // ✅ يُستخدم فقط عندما تكون Algolia غير مضبوطة (fallback) — نفس المنطق
     // القديم بالضبط، محتفَظ به عمداً حتى لا يفقد الموقع البحث كلياً في بيئة

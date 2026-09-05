@@ -383,58 +383,53 @@ export const firestoreRouter = router({
       isNew:        z.boolean().optional(),
     }).optional())
     .query(async ({ input }) => {
-      // ── الفهارس المركبة المفعّلة في Firestore ──────────────────────
-      // 1. isActive + isFeatured + createdAt DESC
-      // 2. isActive + createdAt DESC
-      // 3. isActive + categoryId + isFeatured + createdAt DESC
-      // 4. isActive + categoryId + createdAt DESC
-      // 5. isActive + isOnSale + createdAt DESC
-      // 6. isActive + isBestSeller + createdAt DESC
-      // 7. isActive + brandId + createdAt DESC
-      // (✅ إصلاح Audit المرحلة 5/17: أُضيف createdAt كحقل ثالث لكل فهرس أعلاه
-      // — كانت كل الفروع ما عدا isNew تُعرِض النتائج بترتيب غير محدَّد (ترتيب
-      // إدراج/معرّف عشوائي فعلياً) بدل الأحدث أولاً. **مهم**: هذا يتطلب نشر
-      // firestore.indexes.json المحدَّث أولاً (`firebase deploy --only
-      // firestore:indexes`) قبل نشر هذا الكود — وإلا ستفشل هذه الاستعلامات
-      // فوراً بخطأ "requires an index" فور وصول أول طلب فعلي.)
+      // ── الفهارس المركبة المفعّلة في Firestore (انظر firestore.indexes.json) ──
+      //  1. isActive + isFeatured + createdAt DESC
+      //  2. isActive + createdAt DESC
+      //  3. isActive + categoryId + isFeatured + createdAt DESC
+      //  4. isActive + categoryId + createdAt DESC
+      //  5. isActive + isOnSale + createdAt DESC
+      //  6. isActive + isBestSeller + createdAt DESC
+      //  7. isActive + brandId + createdAt DESC
+      //  8. isActive + categoryId + isOnSale + createdAt DESC
+      //  9. isActive + categoryId + isBestSeller + createdAt DESC
+      // 10. isActive + categoryId + brandId + createdAt DESC
+      //
+      // ✅ إصلاح جوهري: الفروع الحصرية (if/else if) القديمة هنا كانت تُسقِط
+      // أي فلتر ثانٍ بصمت متى ما كان categoryId موجوداً معه (مثال: تحديد فئة
+      // + "العروض" كان يتجاهل onSale تماماً ويُرجع كل منتجات الفئة؛ وتحديد
+      // فئة + علامة تجارية كان يتجاهل brandId بنفس الطريقة) — نتائج غير
+      // صحيحة على الموقع، وتُخالف منطق تطبيق الأندرويد (FirestoreRepository
+      // .getProducts) الذي يُركِّب كل شرط .whereEqualTo() المطلوب دفعة واحدة
+      // دون استبعاد أي منها. أصبح البناء هنا تركيبياً (compositional) بنفس
+      // طريقة الأندرويد تماماً، فتتطابق النتائج بين المنصتين لكل نفس المدخلات.
       let query: any = adminDb.collection("products").where("isActive", "==", true);
 
-      if (input?.categoryId && input?.isFeatured) {
-        // فهرس 3
-        query = query
-          .where("categoryId", "==", input.categoryId)
-          .where("isFeatured", "==", true)
-          .orderBy("createdAt", "desc");
-      } else if (input?.categoryId) {
-        // فهرس 4
-        query = query.where("categoryId", "==", input.categoryId).orderBy("createdAt", "desc");
-      } else if (input?.isFeatured) {
-        // فهرس 1
-        query = query.where("isFeatured", "==", true).orderBy("createdAt", "desc");
-      } else if (input?.isNew) {
-        // ✅ إصلاح: كان هذا الفرع يتجاهل معنى "isNew" فعلياً ويكتفي بترتيب كل
-        // المنتجات حسب الأحدث (بلا أي فلترة حقيقية) — يعمل "بالمصادفة" لكنه لا
-        // يطابق تعريف "جديد" الحقيقي المستخدم في getNewProducts (آخر 30 يوماً)،
-        // ويتعارض مع تطبيق الأندرويد الذي كان يستعلم عن حقل isNew حرفياً (حقل
-        // غير موجود بأي مستند) فيعود دائماً فارغاً هناك. أصبح الآن يستخدم نفس
-        // تعريف "جديد" المعتمد فعلياً في كل مكان آخر بالتطبيق (فهرس 2 + شرط تاريخ).
+      if (input?.categoryId) {
+        query = query.where("categoryId", "==", input.categoryId);
+      }
+      if (input?.brandId) {
+        query = query.where("brandId", "==", input.brandId);
+      }
+      if (input?.isFeatured) {
+        query = query.where("isFeatured", "==", true);
+      }
+      if (input?.onSale) {
+        query = query.where("isOnSale", "==", true);
+      }
+      if (input?.isBestSeller) {
+        query = query.where("isBestSeller", "==", true);
+      }
+      if (input?.isNew) {
+        // "جديد" = أُضيف خلال آخر 30 يوماً (لا يوجد حقل Boolean فعلي isNew على
+        // أي مستند). النطاق هنا يقع على نفس حقل الترتيب (createdAt) فلا
+        // يتطلب فهرساً إضافياً غير الفهرس المستخدم أصلاً لنفس تركيبة الفلاتر
+        // الأخرى (مثال: categoryId+isNew يستخدم نفس فهرس categoryId+createdAt).
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-        query = query.where("createdAt", ">=", thirtyDaysAgo).orderBy("createdAt", "desc");
-      } else if (input?.onSale) {
-        // فهرس 5
-        query = query.where("isOnSale", "==", true).orderBy("createdAt", "desc");
-      } else if (input?.isBestSeller) {
-        // فهرس 6
-        query = query.where("isBestSeller", "==", true).orderBy("createdAt", "desc");
-      } else if (input?.brandId) {
-        // فهرس 7
-        query = query.where("brandId", "==", input.brandId).orderBy("createdAt", "desc");
-      } else {
-        // فهرس 2 (نفس فهرس isNew) — كانت هذه الحالة (بلا أي فلتر) الوحيدة
-        // المرتَّبة أصلاً؛ أُبقيت كما هي بلا تغيير سلوك.
-        query = query.orderBy("createdAt", "desc");
+        query = query.where("createdAt", ">=", thirtyDaysAgo);
       }
+      query = query.orderBy("createdAt", "desc");
 
       const snapshot = await query.limit(100).get();
       // ✅ لا تُعرض المنتجات التي نفدت كميتها (stock <= 0) في صفحات المنتجات
@@ -443,7 +438,23 @@ export const firestoreRouter = router({
         .filter((p: any) => (p.stock ?? 0) > 0);
     }),
 
+  // ✅ جديد: لوحة تحكم الأدمن لإدارة المنتجات كانت تستخدم getProducts
+  // العام نفسه (المخصَّص لعرض المتجر للزوار) — وهو يُخفي أي منتج غير نشط
+  // (isActive=false) أو نافد المخزون (stock<=0) بالتصميم. أثر ذلك: أي منتج
+  // يُعطَّل أو تنفد كميته كان يختفي فوراً من قائمة إدارة المنتجات بلوحة
+  // التحكم أيضاً — فلا يستطيع الأدمن رؤيته لتعديله أو إعادة تفعيله أو تجديد
+  // مخزونه، دون أي رسالة أو تفسير. هذا الإجراء الجديد (على غرار
+  // getAllBannersAdmin/getAllOrdersAdmin) يُرجع كل المنتجات دون أي استبعاد،
+  // محمياً بـadminProcedure (صلاحية أدمن فقط).
+  getAllProductsAdmin: adminProcedure.query(async ({ ctx }) => {
+    const snapshot = await adminDb.collection("products").orderBy("createdAt", "desc").get();
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  }),
+
   // --- المنتجات الجديدة (حسب تاريخ الإضافة) ---
+  // ⚠️ ملاحظة: لم تعد Products.tsx تستخدم هذا المسار لنفس سبب getBestSellers
+  // أعلاه (getProducts الموحّد بـisNew:true يتركّب صحيحاً مع categoryId).
+  // أُبقي للاستخدام الخارجي المحتمل فقط.
   getNewProducts: publicProcedure
     .input(z.object({
       limit: z.number().min(1).max(50).default(10),
@@ -465,7 +476,12 @@ export const firestoreRouter = router({
         .filter((p: any) => (p.stock ?? 0) > 0);
     }),
 
-  // --- الأكثر مبيعاً --- فهرس 6: isActive + isBestSeller ✅
+  // --- الأكثر مبيعاً --- فهرس 6: isActive + isBestSeller + createdAt DESC ✅
+  // ⚠️ ملاحظة: لم تعد Products.tsx تستخدم هذا المسار (تستخدم الآن getProducts
+  // الموحّد بـisBestSeller:true حتى يتركّب صحيحاً مع categoryId — انظر
+  // التعليق أعلى getProducts). أُبقي هذا الإجراء لأي استهلاك خارجي محتمل
+  // للـAPI، وأُصلح نقص orderBy فيه (كان يُرجع النتائج بترتيب مستند/إدراج غير
+  // محدَّد بدل الأحدث أولاً، خلافاً لكل مسارات "الأحدث أولاً" الأخرى بالتطبيق).
   getBestSellers: publicProcedure
     .input(z.object({
       limit: z.number().min(1).max(50).default(10),
@@ -475,6 +491,7 @@ export const firestoreRouter = router({
         .collection("products")
         .where("isActive", "==", true)
         .where("isBestSeller", "==", true)
+        .orderBy("createdAt", "desc")
         .limit(input?.limit || 10)
         .get();
       return snapshot.docs
