@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <!-- ✅ إصلاح: كان "Eleven Store React" — اسم تقني من مرحلة التطوير الأولى
+         (اسم الإطار)، يظهر حرفياً في تبويب المتصفح ونتائج البحث لكل صفحة. -->
+    <title>Eleven Store | متجر Eleven الإلكتروني</title>
+    <meta name="description" content="Eleven Store — تسوّق أحدث المنتجات بأفضل الأسعار وتوصيل سريع." />
+    <meta property="og:title" content="Eleven Store" />
+    <meta property="og:description" content="تسوّق أحدث المنتجات بأفضل الأسعار وتوصيل سريع." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/notification-icon.png" />
+    <!-- ملاحظة: هذه وسوم ثابتة عامة لكل صفحات الموقع مؤقتاً — الحل الجذري
+         (وسم مختلف لكل منتج/صفحة عند المشاركة) يتطلب SSR أو Prerendering
+         أو مكتبة من نوع react-helmet-async، وهو خارج نطاق هذا الإصلاح
+         السريع. راجع تقرير الفحص، البند رقم 5. -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/notification-icon.png" />
+    <!-- ✅ إضافة (Audit المراحل 9/10): تُتيح "إضافة للشاشة الرئيسية" أساسياً
+         بلا أي تخزين مؤقت/عمل دون اتصال (ذلك قرار منتج منفصل ما زال معلَّقاً
+         عمداً — راجع stage9-10-offline-pwa-report.md). -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="apple-touch-icon" href="/notification-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+
+  </body>
+
+</html>

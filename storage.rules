@@ -1,0 +1,68 @@
+rules_version = '2';
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  ELEVEN STORE — Firebase Storage Security Rules
+// ═══════════════════════════════════════════════════════════════════════════
+//  الرفع الفعلي للصور يحدث فقط من لوحة تحكم الموقع (AdminDashboard.tsx عبر
+//  Firebase Storage Client SDK مباشرة — وليس عبر السيرفر). لذلك، خلافاً
+//  لـFirestore، هذه القواعد هي خط الدفاع الحقيقي الوحيد لمنع أي شخص من رفع
+//  ملفات لمساحة تخزين المتجر (حتى لو كان مسجّل دخول كمستخدم عادي).
+// ═══════════════════════════════════════════════════════════════════════════
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        firestore.exists(/databases/(default)/documents/users/$(request.auth.uid)) &&
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isValidImage() {
+      return request.resource.size < 10 * 1024 * 1024 && // ✅ نفس الحد المستخدم بكود الرفع (10MB)
+        request.resource.contentType.matches('image/(jpeg|png|webp|gif)');
+    }
+
+    // مجلدات صور المتجر — قراءة عامة (تُعرض بالمتجر للجميع)، رفع/حذف للأدمن فقط
+    match /{folder}/{fileName} {
+      allow read: if folder in ['products', 'categories', 'banners', 'brands'];
+
+      allow create: if folder in ['products', 'categories', 'banners', 'brands'] &&
+        isAdmin() && isValidImage();
+
+      allow update, delete: if folder in ['products', 'categories', 'banners', 'brands'] &&
+        isAdmin();
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    //  receipts/{userId}/{fileName} — إيصالات الدفع (تحويل بنكي)
+    // ═══════════════════════════════════════════════════════════════════
+    //  ✅ إصلاح حرج: لم يكن هذا المسار موجوداً إطلاقاً بالقواعد السابقة —
+    //  الويب كان يرفع لمسار "receipts/{fileName}" (مسارين، بلا uid)، وهذا
+    //  فعلياً يقع ضمن match /{folder}/{fileName} أعلاه، حيث "receipts" غير
+    //  موجودة أصلاً بالقائمة البيضاء ['products','categories','banners','brands']،
+    //  وحتى لو كانت مضافة فإن allow create يتطلب isAdmin() — بينما رافع
+    //  الإيصال هو عميل عادي وليس أدمن. النتيجة: كل محاولة رفع إيصال دفع من
+    //  الموقع كانت تُرفض بصمت من قواعد Storage (رسالة خطأ "permission-denied"
+    //  للمستخدم)، مما يعني تعطّل كامل لخيار "التحويل البنكي" عملياً.
+    //  تطبيق الأندرويد كان يرفع لمسار مختلف تماماً "receipts/{uid}/{ملف}"
+    //  (ثلاثة مقاطع) وهذا لا يطابق /{folder}/{fileName} (مقطعان فقط)، فكان
+    //  يسقط مباشرة على قاعدة الرفض الافتراضية في آخر الملف — نفس الفشل.
+    //  الآن: مسار موحّد بالـuid لكلا المنصتين، رفع/قراءة مقتصرة على صاحب
+    //  الإيصال نفسه أو الأدمن (بيانات دفع حسّاسة، ليست عامة كصور المنتجات).
+    match /receipts/{userId}/{fileName} {
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow create: if isSignedIn() && request.auth.uid == userId && isValidImage();
+      allow update, delete: if false; // إيصال مرفوع = نهائي، لا تعديل ولا حذف من العميل
+    }
+
+    // أي مسار آخر غير مذكور: ممنوع تماماً افتراضياً
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

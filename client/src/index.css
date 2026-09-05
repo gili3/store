@@ -1,0 +1,304 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+/*
+  ELEVEN STORE — نظام الألوان الموحّد (Design Tokens) — نسخة "Design Rules"
+  ─────────────────────────────────────────────────────────────
+  المصدر الوحيد لكل ألوان الموقع. يقابله في الأكواد الأخرى:
+  - client/src/lib/colors.ts  (نفس القيم بصيغة JS/TS للاستخدام
+    في الأنماط المضمّنة، الفواتير، الرسوم، إلخ)
+  - apk/app/src/main/java/com/eleven/store/ui/theme/Theme.kt
+    (نفس النظام في تطبيق الأندرويد)
+
+  القاعدة: 5 ألوان أساسية فقط — أسود / أبيض / رمادي (للواجهة)
+  + أخضر / أحمر / أزرق / برتقالي (لحالات الطلب فقط، وليست ألوان
+  علامة أو أزرار). لا يوجد لون "Accent" تجاري منفصل بعد الآن.
+  النص الأساسي: #0F172A — النص الثانوي: #64748B فقط (لا درجة ثالثة).
+*/
+:root {
+  /* الأساس */
+  --ink: #0F172A;          /* نص أساسي وأزرار Primary */
+  --pure-white: #FFFFFF;
+  --text-secondary: #64748B; /* النص الثانوي — الدرجة الوحيدة المسموحة */
+
+  /* تدرّج محايد (رمادي واحد فقط تُشتق منه كل الدرجات) */
+  --neutral-50: #F8FAFC;
+  --neutral-100: #F1F5F9;
+  --neutral-200: #E2E8F0;
+  --neutral-300: #CBD5E1;
+  --neutral-400: #94A3B8;
+  --neutral-500: #64748B;
+  --neutral-600: #475569;
+  --neutral-700: #334155;
+  --neutral-800: #1E293B;
+  --neutral-900: #0F172A;
+
+  /* Primary = أسود/رمادي غامق فقط (لا لون علامة منفصل) */
+  --primary-50: #F8FAFC;
+  --primary-100: #F1F5F9;
+  --primary-200: #E2E8F0;
+  --primary-300: #CBD5E1;
+  --primary-400: #94A3B8;
+  --primary-500: #334155;
+  --primary-600: #1E293B;
+  --primary-700: #0F172A;
+  --primary-800: #0F172A;
+  --primary-900: #0F172A;
+
+  /* ألوان الحالة الأربعة — تُستخدم فقط لحالات الطلب والتنبيهات، لا كألوان واجهة عامة */
+  --state-green: #22C55E;
+  --state-green-bg: #DCFCE7;
+  --state-green-fg: #166534;
+
+  --state-red: #EF4444;
+  --state-red-bg: #FEE2E2;
+  --state-red-fg: #991B1B;
+
+  --state-blue: #3B82F6;
+  --state-blue-bg: #DBEAFE;
+  --state-blue-fg: #1E3A8A;
+
+  --state-orange: #F97316;
+  --state-orange-bg: #FFEDD5;
+  --state-orange-fg: #9A3412;
+
+  /* Primary - Eleven Brand Color (أسود/رمادي غامق، لا لون آخر) */
+  --primary: var(--ink);
+  --primary-foreground: #FFFFFF;
+
+  /* System Tokens */
+  --background: #FFFFFF;
+  --foreground: var(--ink);
+
+  --card: #FFFFFF;
+  --card-foreground: var(--ink);
+
+  --popover: #FFFFFF;
+  --popover-foreground: var(--ink);
+
+  --secondary: var(--neutral-50);
+  --secondary-foreground: var(--ink);
+
+  --muted: var(--neutral-100);
+  --muted-foreground: var(--text-secondary);
+
+  /* Accent هنا = تمييز محايد خفيف (Hover/Highlight) وليس لون علامة */
+  --accent: var(--neutral-100);
+  --accent-foreground: var(--ink);
+
+  --destructive: var(--state-red);
+  --destructive-foreground: #FFFFFF;
+
+  --success: var(--state-green);
+  --success-foreground: #FFFFFF;
+
+  --warning: var(--state-orange);
+  --warning-foreground: #FFFFFF;
+
+  --info: var(--state-blue);
+  --info-foreground: #FFFFFF;
+
+  --border: var(--neutral-200);
+  --input: var(--neutral-50);
+  --ring: var(--neutral-400);
+
+  --chart-1: var(--ink);
+  --chart-2: var(--state-blue);
+  --chart-3: var(--state-green);
+  --chart-4: var(--state-orange);
+  --chart-5: var(--neutral-400);
+
+  --sidebar: var(--neutral-50);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--ink);
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: var(--neutral-100);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--neutral-200);
+  --sidebar-ring: var(--neutral-400);
+
+  --radius: 14px;
+}
+
+.dark {
+  --background: #0F172A;
+  --foreground: #F1F5F9;
+
+  --card: #1E293B;
+  --card-foreground: #F1F5F9;
+
+  --popover: #1E293B;
+  --popover-foreground: #F1F5F9;
+
+  --secondary: #1E293B;
+  --secondary-foreground: #F1F5F9;
+
+  --muted: #1E293B;
+  --muted-foreground: var(--neutral-400);
+
+  --primary: #E2E8F0;
+  --primary-foreground: #0F172A;
+
+  --accent: #334155;
+  --accent-foreground: #F1F5F9;
+
+  --destructive: #F87171;
+  --destructive-foreground: #0F172A;
+
+  --success: #4ADE80;
+  --success-foreground: #0F172A;
+
+  --warning: #FB923C;
+  --warning-foreground: #0F172A;
+
+  --info: #60A5FA;
+  --info-foreground: #0F172A;
+
+  --border: #334155;
+  --input: #1E293B;
+  --ring: var(--neutral-400);
+
+  --chart-1: #E2E8F0;
+  --chart-2: #60A5FA;
+  --chart-3: #4ADE80;
+  --chart-4: #FB923C;
+  --chart-5: var(--neutral-500);
+
+  --sidebar: #1E293B;
+  --sidebar-foreground: #F1F5F9;
+  --sidebar-primary: #E2E8F0;
+  --sidebar-primary-foreground: #0F172A;
+  --sidebar-accent: #334155;
+  --sidebar-accent-foreground: #F1F5F9;
+  --sidebar-border: #334155;
+  --sidebar-ring: var(--neutral-400);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    direction: rtl;
+    text-align: right;
+    unicode-bidi: plaintext;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+}
+
+@layer components {
+  .eleven-title {
+    font-family: 'Georgia', serif;
+    @apply font-bold tracking-tight;
+  }
+
+  .eleven-brand {
+    font-family: 'Georgia', serif;
+    letter-spacing: 0.2em;
+    @apply uppercase font-bold;
+  }
+
+  .container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Product Card Styling — موحّدة مع بطاقة تطبيق الأندرويد (ProductCard.kt):
+     زوايا rounded-xl (12px) وصورة مربعة 1:1 */
+  .product-card-container {
+    @apply relative bg-card rounded-xl overflow-hidden transition-all duration-200 border border-border;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+
+  .product-image-wrapper {
+    @apply relative aspect-square overflow-hidden bg-secondary;
+  }
+
+  .price-tag {
+    @apply font-bold text-foreground;
+  }
+
+  .old-price {
+    @apply text-xs text-muted-foreground line-through ml-2;
+  }
+
+  /* Bottom Navigation Styling */
+  .bottom-nav {
+    @apply fixed bottom-0 left-0 right-0 bg-card border-t border-border flex justify-around items-center py-3 z-50 md:hidden;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+  }
+
+  .bottom-nav-item {
+    @apply flex flex-col items-center gap-1 text-muted-foreground transition-colors;
+  }
+
+  .bottom-nav-item.active {
+    @apply text-primary;
+  }
+
+  /* Banner Styling */
+  .hero-banner {
+    @apply relative w-full aspect-[4/5] md:aspect-[16/7] overflow-hidden rounded-3xl;
+  }
+
+  .category-pill {
+    @apply flex flex-col items-center gap-2 p-4 bg-secondary rounded-2xl transition-all hover:bg-muted;
+  }
+}
+
+/* Animations */
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out forwards;
+}
