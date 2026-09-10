@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ELEVEN — عطور • مستحضرات تجميل • ساعات</title>
+<meta name="description" content="اكتشف مجموعة مختارة من العطور ومستحضرات التجميل والساعات من Eleven، وتسوّق بسهولة من خلال التطبيق." />
+<!-- ضع favicon.ico بجانب هذا الملف عند الرفع -->
+<link rel="icon" href="favicon.ico" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0B0B0D;
+    --ink-soft: #17161A;
+    --gold: #C9A65B;
+    --gold-dim: rgba(201,166,91,0.45);
+    --cream: #F6F2EA;
+    --cream-dim: #B9B2A6;
+    --paper: #FAF8F5;
+    --text: #17161A;
+    --muted: #6E675C;
+    --line: #E7E1D6;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: 'Cairo', Tahoma, Arial, sans-serif;
+    color: var(--text);
+    background: var(--paper);
+  }
+  a { color: inherit; }
+  .container { max-width: 1040px; margin: 0 auto; padding: 0 28px; }
+  .wordmark {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    letter-spacing: 6px;
+    direction: ltr;
+    display: inline-block;
+  }
+
+  /* ── HERO ─────────────────────────────────────────── */
+  .hero {
+    background: var(--ink);
+    color: var(--cream);
+    text-align: center;
+    padding: 100px 0 92px;
+  }
+  .hero .wordmark { font-size: 30px; color: #fff; }
+  .hero .rule {
+    width: 46px;
+    height: 1px;
+    background: var(--gold);
+    margin: 22px auto 22px;
+  }
+  .hero .kicker {
+    font-size: 14px;
+    letter-spacing: 2px;
+    color: var(--cream-dim);
+    margin: 0 0 46px;
+  }
+  .hero h1 {
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1.5;
+    margin: 0 0 22px;
+  }
+  .hero p.lede {
+    font-size: 16px;
+    line-height: 2;
+    color: var(--cream-dim);
+    max-width: 480px;
+    margin: 0 auto 42px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 34px;
+    border-radius: 3px;
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+    border: 1px solid var(--gold);
+    color: var(--ink);
+    background: var(--gold);
+  }
+  .btn-outline {
+    background: transparent;
+    color: var(--cream);
+    border-color: rgba(246,242,234,0.3);
+  }
+
+  /* ── SECTION HEADERS (shared) ─────────────────────── */
+  .sec { padding: 96px 0; }
+  .sec-head { text-align: center; margin-bottom: 64px; }
+  .sec-head .kicker {
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin: 0 0 12px;
+  }
+  .sec-head h2 {
+    font-size: 30px;
+    font-weight: 700;
+    margin: 0;
+  }
+  .sec-head .sub {
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 10px;
+    letter-spacing: 1px;
+  }
+
+  /* ── DISCOVER / CATEGORIES ────────────────────────── */
+  .cats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .cat {
+    padding: 0 34px;
+    text-align: center;
+    border-right: 1px solid var(--line);
+  }
+  .cat:first-child { padding-right: 0; }
+  .cat:last-child { padding-left: 0; border-left: 1px solid var(--line); }
+  .cat .icon {
+    width: 52px; height: 52px;
+    margin: 0 auto 26px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cat h3 { font-size: 19px; font-weight: 700; margin: 0 0 12px; }
+  .cat p { font-size: 14.5px; color: var(--muted); line-height: 1.9; margin: 0; max-width: 240px; margin-inline: auto; }
+
+  /* ── HOW IT WORKS ──────────────────────────────────── */
+  .how { background: var(--ink); color: var(--cream); text-align: center; }
+  .how .sec-head h2 { color: #fff; }
+  .how .sec-head .kicker { color: var(--cream-dim); }
+  .flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 48px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .flow .step {
+    background: var(--ink-soft);
+    border: 1px solid rgba(246,242,234,0.12);
+    padding: 12px 20px;
+    border-radius: 100px;
+  }
+  .flow .arrow { color: var(--gold); font-size: 16px; }
+
+  /* ── WHY ──────────────────────────────────────────── */
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 44px;
+  }
+  .why-item { text-align: center; }
+  .why-item .letter {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 34px;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+  .why-item h3 { font-size: 17px; font-weight: 700; margin: 0 0 10px; }
+  .why-item p { font-size: 14px; color: var(--muted); line-height: 1.9; margin: 0; }
+
+  /* ── CONTACT ──────────────────────────────────────── */
+  .contact { text-align: center; background: #F1ECE2; }
+  .contact h2 { font-size: 24px; font-weight: 700; margin: 0 0 14px; }
+  .contact p.lead { color: var(--muted); font-size: 14.5px; margin: 0 0 26px; }
+  .contact .email {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 17px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid var(--gold);
+    margin-bottom: 18px;
+    direction: ltr;
+  }
+  .contact .social { font-size: 13.5px; color: var(--muted); }
+
+  /* ── FOOTER ───────────────────────────────────────── */
+  footer { background: var(--ink); color: var(--cream-dim); padding: 56px 0 34px; text-align: center; }
+  footer .wordmark { font-size: 20px; color: #fff; margin-bottom: 10px; }
+  footer .kicker { font-size: 12.5px; letter-spacing: 1.5px; margin-bottom: 18px; }
+  footer .tagline { font-size: 13.5px; margin-bottom: 30px; }
+  footer .rule { width: 32px; height: 1px; background: rgba(246,242,234,0.18); margin: 0 auto 24px; }
+  footer .copy { font-size: 12px; }
+
+  /* ── RESPONSIVE ───────────────────────────────────── */
+  @media (max-width: 780px) {
+    .hero { padding: 76px 0 64px; }
+    .hero h1 { font-size: 28px; }
+    .sec { padding: 68px 0; }
+    .sec-head { margin-bottom: 44px; }
+    .cats, .why-grid { grid-template-columns: 1fr; gap: 40px; }
+    .cat { padding: 0 !important; border: none !important; }
+    .flow { font-size: 13.5px; }
+    .flow .step { padding: 10px 16px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <span class="wordmark">ELEVEN</span>
+      <div class="rule"></div>
+      <p class="kicker">عطور&nbsp;&nbsp;•&nbsp;&nbsp;مستحضرات تجميل&nbsp;&nbsp;•&nbsp;&nbsp;ساعات</p>
+      <h1>كل ما تحبّه، في مكان واحد.</h1>
+      <p class="lede">اكتشف مجموعة مختارة من العطور ومستحضرات التجميل والساعات من Eleven، واستمتع بتجربة تسوق سهلة وسريعة من خلال تطبيقنا.</p>
+      <!-- ⚠️ استبدل الرابط بالرابط الفعلي لتطبيقك على Google Play -->
+      <a class="btn" href="https://play.google.com/store/apps/details?id=YOUR_PACKAGE_NAME" target="_blank" rel="noopener">تحميل التطبيق</a>
+    </div>
+  </section>
+
+  <!-- DISCOVER -->
+  <section class="sec">
+    <div class="container">
+      <div class="sec-head">
+        <p class="kicker">اكتشف Eleven</p>
+        <h2>منتجات مختارة بعناية</h2>
+        <p class="sub">جودة&nbsp;&nbsp;•&nbsp;&nbsp;أناقة&nbsp;&nbsp;•&nbsp;&nbsp;بساطة</p>
+      </div>
+      <div class="cats">
+        <div class="cat">
+          <div class="icon">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M10 3h4M11 3v3.2c0 .5-.2 1-.6 1.3L9 8.8c-.6.5-1 1.3-1 2.1V19a2 2 0 002 2h4a2 2 0 002-2v-8.1c0-.8-.4-1.6-1-2.1l-1.4-1.3a1.8 1.8 0 01-.6-1.3V3" stroke="#C9A65B" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 13h6" stroke="#C9A65B" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </div>
+          <h3>العطور</h3>
+          <p>اكتشف عطوراً تناسب ذوقك ومناسباتك المختلفة.</p>
+        </div>
+        <div class="cat">
+          <div class="icon">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M14 3l-8 8-3 7 7-3 8-8-4-4z" stroke="#C9A65B" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 6l4 4" stroke="#C9A65B" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </div>
+          <h3>مستحضرات التجميل</h3>
+          <p>منتجات تجميل مختارة لتكمل إطلالتك.</p>
+        </div>
+        <div class="cat">
+          <div class="icon">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="#C9A65B" stroke-width="1.3"/><path d="M12 8.5V12l2.4 1.4" stroke="#C9A65B" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 2.5h4M10 21.5h4" stroke="#C9A65B" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </div>
+          <h3>الساعات</h3>
+          <p>تصاميم أنيقة تجمع بين المظهر العصري والكلاسيكي.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="sec how">
+    <div class="container">
+      <div class="sec-head">
+        <p class="kicker">تسوّق بسهولة</p>
+        <h2>حمّل تطبيق Eleven واستمتع بتجربة التسوق الكاملة</h2>
+      </div>
+      <div class="flow">
+        <span class="step">تصفح المنتجات</span>
+        <span class="arrow">←</span>
+        <span class="step">اختر ما يناسبك</span>
+        <span class="arrow">←</span>
+        <span class="step">اطلب بسهولة</span>
+        <span class="arrow">←</span>
+        <span class="step">تابع طلبك</span>
+      </div>
+      <a class="btn btn-outline" href="https://play.google.com/store/apps/details?id=YOUR_PACKAGE_NAME" target="_blank" rel="noopener">تحميل تطبيق Eleven</a>
+    </div>
+  </section>
+
+  <!-- WHY -->
+  <section class="sec">
+    <div class="container">
+      <div class="sec-head">
+        <p class="kicker">لماذا Eleven؟</p>
+      </div>
+      <div class="why-grid">
+        <div class="why-item">
+          <div class="letter">01</div>
+          <h3>اختيارات مميزة</h3>
+          <p>نختار منتجاتنا بعناية لتناسب ذوقك.</p>
+        </div>
+        <div class="why-item">
+          <div class="letter">02</div>
+          <h3>تجربة سهلة</h3>
+          <p>تصفح واطلب من خلال تطبيق واحد.</p>
+        </div>
+        <div class="why-item">
+          <div class="letter">03</div>
+          <h3>داخل السودان</h3>
+          <p>نوفر خدماتنا للعملاء داخل السودان.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="sec contact">
+    <div class="container">
+      <h2>تواصل معنا</h2>
+      <p class="lead">للاستفسارات والدعم</p>
+      <a class="email" href="mailto:support@eleven-sd.com">support@eleven-sd.com</a>
+      <p class="social">تابعنا على وسائل التواصل الاجتماعي.</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="wordmark">ELEVEN</div>
+      <p class="kicker">عطور&nbsp;•&nbsp;مستحضرات التجميل&nbsp;•&nbsp;الساعات</p>
+      <p class="tagline">تجربة تسوق مصممة لك.</p>
+      <div class="rule"></div>
+      <p class="copy">© <span id="y"></span> Eleven. جميع الحقوق محفوظة.</p>
+    </div>
+  </footer>
+
+  <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+</body>
+</html>
