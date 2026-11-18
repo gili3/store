@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حذف الحساب — ELEVEN</title><meta name="description" content="كيفية حذف حساب Eleven وبياناته من داخل التطبيق أو عبر البريد الإلكتروني.">
+<link rel="canonical" href="https://eleven-sd.com/delete-account"><link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="icon" href="favicon.ico" sizes="any"><meta name="theme-color" content="#0B0B0D"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Cormorant+Garamond:wght@600&display=swap" rel="stylesheet"><link rel="stylesheet" href="legal.css"></head>
+<body><section class="page-head"><div class="container"><span class="wordmark">ELEVEN</span><div class="rule"></div><h1>حذف الحساب وبياناته</h1></div></section>
+<section class="doc"><div class="container"><a class="back-link" href="index.html">← العودة للصفحة الرئيسية</a>
+
+<p>توضّح هذه الصفحة كيفية حذف حساب <strong>Eleven</strong> (التطبيق والموقع eleven-sd.com) وبياناته.</p>
+<div class="del-card" id="delCard">
+<h2 style="margin-top:0">احذف حسابك الآن</h2>
+<p>أدخل بريدك وكلمة المرور، ثم رمز التحقق (OTP) الذي سيصلك على بريدك لتأكيد الحذف.</p>
+
+<form id="stepRequest" novalidate>
+<label for="delEmail">البريد الإلكتروني</label>
+<input id="delEmail" type="email" autocomplete="email" inputmode="email" dir="ltr" required>
+<label for="delPass">كلمة المرور</label>
+<input id="delPass" type="password" autocomplete="current-password" dir="ltr" required>
+<button class="btn-del" type="submit" id="btnSend">إرسال رمز التحقق</button>
+</form>
+
+<form id="stepConfirm" novalidate hidden>
+<p class="hint">أرسلنا رمزاً من 6 أرقام إلى <strong id="sentTo" dir="ltr"></strong>. صالح لمدة 10 دقائق.</p>
+<label for="delOtp">رمز التحقق (OTP)</label>
+<input id="delOtp" type="text" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*" maxlength="6" dir="ltr" class="otp" required>
+<label class="chk"><input type="checkbox" id="delAck"> أفهم أن حذف الحساب نهائي ولا يمكن التراجع عنه.</label>
+<button class="btn-del" type="submit" id="btnConfirm">تأكيد حذف الحساب نهائياً</button>
+<button class="btn-link" type="button" id="btnResend" disabled>إعادة إرسال الرمز</button>
+</form>
+
+<div id="stepDone" hidden><p><strong>تم حذف حسابك.</strong> ستصلك رسالة تأكيد على بريدك، وتُمسح بقية البيانات وفق ما هو موضح أدناه.</p></div>
+<p id="delMsg" class="msg" role="alert" aria-live="polite" hidden></p>
+</div>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
+import { initializeAuth, inMemoryPersistence, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
+import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-functions.js';
+
+// نفس قيم VITE_FIREBASE_* المستعملة في موقع المتجر (قيم عامة وليست أسراراً)
+const firebaseConfig = {
+  apiKey: 'PASTE_VITE_FIREBASE_API_KEY',
+  authDomain: 'queen-beauty-b811b.firebaseapp.com',
+  projectId: 'queen-beauty-b811b',
+  appId: 'PASTE_VITE_FIREBASE_APP_ID'
+};
+
+const app = initializeApp(firebaseConfig);
+// جلسة في الذاكرة فقط: لا يبقى المستخدم مسجّل دخول بعد إغلاق الصفحة
+const auth = initializeAuth(app, { persistence: inMemoryPersistence });
+const fns = getFunctions(app); // نفس المنطقة الافتراضية المستعملة في الموقع والتطبيق
+const requestOtp = httpsCallable(fns, 'requestAccountDeletionOtp');
+const confirmDeletion = httpsCallable(fns, 'confirmAccountDeletion');
+
+const $ = id => document.getElementById(id);
+const fReq = $('stepRequest'), fCon = $('stepConfirm'), msg = $('delMsg');
+let timer = null;
+
+function show(text, ok){ msg.textContent = text; msg.className = 'msg' + (ok ? ' ok' : ''); msg.hidden = !text; }
+function busy(btn, on, label){ btn.disabled = on; if (label) btn.textContent = label; }
+
+function errText(e){
+  const c = (e && e.code) || '';
+  if (c === 'auth/invalid-credential' || c === 'auth/wrong-password' || c === 'auth/user-not-found' || c === 'auth/invalid-email') return 'البريد أو كلمة المرور غير صحيحة.';
+  if (c === 'auth/too-many-requests' || c === 'functions/resource-exhausted') return 'محاولات كثيرة. حاول لاحقاً.';
+  if (c === 'auth/user-disabled') return 'هذا الحساب معطّل. تواصل مع الدعم.';
+  if (c === 'functions/deadline-exceeded') return 'انتهت صلاحية الرمز، أعد إرساله.';
+  if (c === 'functions/invalid-argument') return 'رمز التحقق غير صحيح.';
+  if (c === 'functions/failed-precondition') return 'لم يُطلب رمز بعد، أعد إرسال الرمز.';
+  if (c === 'auth/network-request-failed' || c === 'functions/unavailable') return 'تعذّر الاتصال. تحقق من الإنترنت.';
+  return 'تعذّر إكمال الطلب. حاول مرة أخرى.';
+}
+function cooldown(){
+  const b = $('btnResend'); let n = 60; b.disabled = true; clearInterval(timer);
+  b.textContent = 'إعادة الإرسال بعد 60 ث';
+  timer = setInterval(() => { n--; b.textContent = n > 0 ? 'إعادة الإرسال بعد ' + n + ' ث' : 'إعادة إرسال الرمز'; if (n <= 0){ clearInterval(timer); b.disabled = false; } }, 1000);
+}
+
+fReq.addEventListener('submit', async ev => {
+  ev.preventDefault(); show('');
+  const email = $('delEmail').value.trim(), pass = $('delPass').value;
+  if (!email || !pass){ show('أدخل البريد وكلمة المرور.'); return; }
+  const btn = $('btnSend'); busy(btn, true, 'جارٍ التحقق…');
+  try {
+    await signInWithEmailAndPassword(auth, email, pass); // التحقق من كلمة المرور
+    await requestOtp();                                  // يُرسل OTP إلى بريد الحساب
+    $('sentTo').textContent = email;
+    fReq.hidden = true; fCon.hidden = false; $('delOtp').focus(); cooldown();
+  } catch (e){
+    show(errText(e));
+    try { await signOut(auth); } catch (_) {}
+  } finally { busy(btn, false, 'إرسال رمز التحقق'); }
+});
+
+$('btnResend').addEventListener('click', async () => {
+  show('');
+  try { await requestOtp(); show('تم إرسال رمز جديد.', true); cooldown(); }
+  catch (e){ show(errText(e)); }
+});
+
+fCon.addEventListener('submit', async ev => {
+  ev.preventDefault(); show('');
+  const otp = $('delOtp').value.trim();
+  if (!/^\d{6}$/.test(otp)){ show('أدخل الرمز المكوّن من 6 أرقام.'); return; }
+  if (!$('delAck').checked){ show('يرجى تأكيد فهمك أن الحذف نهائي.'); return; }
+  const btn = $('btnConfirm'); busy(btn, true, 'جارٍ الحذف…');
+  try {
+    await confirmDeletion({ otp });
+    try { await signOut(auth); } catch (_) {}
+    $('delPass').value = ''; fCon.hidden = true; $('stepDone').hidden = false;
+  } catch (e){
+    show(errText(e)); busy(btn, false, 'تأكيد حذف الحساب نهائياً');
+  }
+});
+</script>
+
+<h2>من داخل التطبيق</h2>
+<ol>
+<li>افتح تطبيق Eleven وسجّل الدخول.</li>
+<li>اذهب إلى <strong>الحساب ← حذف الحساب</strong>.</li>
+<li>أدخل كلمة المرور ثم رمز التحقق (OTP) المُرسل إلى بريدك الإلكتروني وأكّد الحذف.</li>
+</ol>
+<h2>بديل: عبر البريد</h2>
+<p>أرسل رسالة من بريدك المسجّل في حسابك إلى <a class="m" href="mailto:support@eleven-sd.com">support@eleven-sd.com</a> بعنوان <strong>“طلب حذف حساب Eleven”</strong>. سنتحقق من ملكيتك للحساب عبر رمز تحقق مؤقت، ثم ننفّذ الطلب.</p>
+<h2>ما الذي يُحذف؟</h2>
+<ul><li>بيانات الحساب (الاسم، البريد، رقم الهاتف، بيانات تسجيل الدخول).</li><li>عناوين التوصيل المحفوظة ورمز الإشعارات وتفضيلاتك.</li><li>الارتباط بين حسابك وسجل طلباتك.</li></ul>
+<h2>ما الذي قد نحتفظ به؟</h2>
+<p>الحد الأدنى من سجلات الطلبات المكتملة عند الحاجة لأغراض محاسبية أو قانونية أو لمنع الاحتيال، لمدة لا تتجاوز 12 شهراً ثم تُحذف.</p>
+<h2>المدة</h2>
+<p>يُنفَّذ الحذف خلال 30 يوماً من تأكيد الطلب، وهو نهائي ولا يمكن التراجع عنه. لمزيد من التفاصيل راجع <a class="m" href="privacy-policy.html">سياسة الخصوصية</a>.</p>
+</div></section>
+<footer><div class="container"><div class="wordmark">ELEVEN</div><p class="links"><a href="index.html">الرئيسية</a>·<a href="privacy-policy.html">سياسة الخصوصية</a>·<a href="terms.html">شروط الخدمة</a>·<a href="delete-account.html">حذف الحساب</a></p>
+<p class="copy">© 2026 Eleven. جميع الحقوق محفوظة.</p></div></footer></body></html>

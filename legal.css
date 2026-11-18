@@ -1,0 +1,33 @@
+
+:root{--ink:#0B0B0D;--gold:#C9A65B;--cream:#F6F2EA;--cream-dim:#B9B2A6;--paper:#FAF8F5;--text:#17161A;--muted:#6E675C}
+*{box-sizing:border-box}body{margin:0;font-family:'Cairo',Tahoma,Arial,sans-serif;color:var(--text);background:var(--paper)}
+a{color:inherit}.container{max-width:780px;margin:0 auto;padding:0 24px}
+.wordmark{font-family:'Cormorant Garamond',serif;font-weight:600;letter-spacing:6px;direction:ltr;display:inline-block}
+.page-head{background:var(--ink);color:var(--cream);text-align:center;padding:52px 0 44px}
+.page-head .wordmark{font-size:22px;color:#fff}.page-head .rule{width:40px;height:1px;background:var(--gold);margin:18px auto}
+.page-head h1{font-size:25px;margin:0}.page-head .updated{font-size:13px;color:var(--cream-dim);margin:10px 0 0}
+.back-link{display:inline-block;margin:30px 0 0;font-size:14px;font-weight:700;color:#9A7B34;text-decoration:none;border-bottom:1px solid var(--gold)}
+.doc{padding:40px 0 88px}.doc h2{font-size:19px;margin:38px 0 12px}
+.doc p,.doc li{font-size:15px;line-height:2.1;color:var(--muted);margin:0 0 10px}
+.doc ul,.doc ol{padding-inline-start:22px;margin:0 0 14px}.doc strong{color:var(--text)}
+.doc a.m{color:var(--text);font-weight:700}
+footer{background:var(--ink);color:var(--cream-dim);padding:48px 0 30px;text-align:center}
+footer .wordmark{font-size:20px;color:#fff;margin-bottom:10px}footer .links{font-size:13px;line-height:2.2}
+footer .links a{color:var(--cream-dim);text-decoration:none;margin:0 8px}footer .links a:hover{color:#fff}
+footer .copy{font-size:12px;margin-top:16px}
+@media(max-width:780px){.page-head h1{font-size:21px}.doc{padding:30px 0 60px}}
+.btn-del{display:inline-block;background:#B3261E;color:#fff!important;text-decoration:none;font-weight:700;font-size:16px;padding:15px 38px;border-radius:4px}.btn-del:hover{background:#8F1E18}
+.del-card{margin:28px 0 8px;padding:26px;background:#fff;border:1px solid #E6DFD0;border-radius:8px}
+.del-card label{display:block;font-size:14px;font-weight:700;margin:16px 0 6px}
+.del-card input[type=email],.del-card input[type=password],.del-card input[type=text]{width:100%;font:inherit;font-size:16px;padding:12px 14px;border:1px solid #CFC7B6;border-radius:4px;background:var(--paper)}
+.del-card input:focus{outline:2px solid var(--gold);outline-offset:1px}
+.del-card .otp{text-align:center;letter-spacing:10px;font-size:22px}
+.del-card .chk{display:flex;gap:8px;align-items:flex-start;font-weight:400;line-height:1.8;color:var(--muted)}
+.del-card .chk input{margin-top:8px}
+.del-card .btn-del{display:block;width:100%;margin-top:20px;border:0;cursor:pointer;font-family:inherit}
+.del-card .btn-del:disabled{opacity:.6;cursor:default}
+.btn-link{display:block;margin:14px auto 0;background:none;border:0;font:inherit;font-size:14px;color:#9A7B34;cursor:pointer;text-decoration:underline}
+.btn-link:disabled{color:var(--muted);text-decoration:none;cursor:default}
+.del-card .msg{margin:16px 0 0;padding:10px 14px;border-radius:4px;background:#FBEAE8;color:#8F1E18;font-size:14px;line-height:1.8}
+.del-card .msg.ok{background:#E8F3EA;color:#1E6B34}
+[hidden]{display:none!important}
