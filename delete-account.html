@@ -66,7 +66,8 @@ function errText(e){
   if (c === 'functions/invalid-argument') return 'رمز التحقق غير صحيح.';
   if (c === 'functions/failed-precondition') return 'لم يُطلب رمز بعد، أعد إرسال الرمز.';
   if (c === 'auth/network-request-failed' || c === 'functions/unavailable') return 'تعذّر الاتصال. تحقق من الإنترنت.';
-  return 'تعذّر إكمال الطلب. حاول مرة أخرى.';
+  console.error('[delete-account]', c, e && e.message, e);
+  return 'تعذّر إكمال الطلب. حاول مرة أخرى.' + (c ? ' (' + c + ')' : '');
 }
 function cooldown(){
   const b = $('btnResend'); let n = 60; b.disabled = true; clearInterval(timer);
